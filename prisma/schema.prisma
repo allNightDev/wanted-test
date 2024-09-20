@@ -1,0 +1,21 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:test1234@localhost/wanted-test"
+}
+
+model post {
+  id       Int      @id @default(autoincrement())
+  title    String
+  content  String
+  writer   String
+  password String
+  createDt DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
+  updateDt DateTime @default(dbgenerated("NOW()")) @map("update_dt") @db.DateTime(0)
+
+  @@map("POST")
+}
