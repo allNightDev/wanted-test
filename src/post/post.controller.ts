@@ -8,14 +8,18 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { Prisma } from '@prisma/client';
 import { CreatePostDto } from './dto/create-post.dto';
-import { updatePostDto } from './dto/update-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('게시물')
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @ApiOperation({
+    summary: '게시물 생성',
+  })
   @Post()
   create(@Body() createPostDto: CreatePostDto) {
     return this.postService.create(createPostDto);
@@ -32,7 +36,7 @@ export class PostController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: updatePostDto) {
+  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(+id, updatePostDto);
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { post, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { updatePostDto } from './dto/update-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostService {
@@ -19,7 +19,7 @@ export class PostService {
     return `This action returns a #${id} post`;
   }
 
-  update(id: number, updatePostDto: updatePostDto) {
+  update(id: number, updatePostDto: UpdatePostDto) {
     return `This action updates a #${id} post`;
   }
 
