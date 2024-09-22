@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { comment } from '@prisma/client';
 
 @Injectable()
 export class CommentService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(data: CreateCommentDto): Promise<comment> {
+    await this.postCheck(data.postId);
+
+    return await this.prisma.comment.create({
+      data,
+    });
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  async findAll(
+    skip: number,
+    take: number,
+    postId: number,
+  ): Promise<comment[]> {
+    await this.postCheck(postId);
+
+    return await this.prisma.comment.findMany({
+      where: {
+        postId,
+      },
+      skip,
+      take,
+      orderBy: {
+        createDt: 'desc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
+  async postCheck(id: number) {
+    const post = await this.prisma.post.findFirst({
+      where: {
+        id,
+      },
+    });
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+    if (post == null) throw new HttpException('', HttpStatus.NO_CONTENT);
   }
 }

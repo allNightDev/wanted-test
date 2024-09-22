@@ -26,7 +26,7 @@ model comment {
   id       Int      @id @default(autoincrement())
   content  String
   writer   String
-  postId   Int
+  postId   Int      @map("post_id")
   createDt DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
 
   post  post    @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -39,7 +39,7 @@ model reply {
   id        Int      @id @default(autoincrement())
   content   String
   writer    String
-  commentId Int
+  commentId Int      @map("comment_id")
   createDt  DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
 
   comment comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
