@@ -15,7 +15,34 @@ model post {
   writer   String
   password String
   createDt DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
-  updateDt DateTime @default(dbgenerated("NOW()")) @map("update_dt") @db.DateTime(0)
+  updateDt DateTime @default(dbgenerated("NOW()")) @updatedAt @map("update_dt") @db.DateTime(0)
+
+  comment comment[]
 
   @@map("POST")
+}
+
+model comment {
+  id       Int      @id @default(autoincrement())
+  content  String
+  writer   String
+  postId   Int
+  createDt DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
+
+  post  post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reply reply[]
+
+  @@map("COMMENT")
+}
+
+model reply {
+  id        Int      @id @default(autoincrement())
+  content   String
+  writer    String
+  commentId Int
+  createDt  DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
+
+  comment comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@map("REPLY")
 }
