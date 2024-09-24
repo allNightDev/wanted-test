@@ -5,7 +5,8 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:test1234@localhost/wanted-test"
+  url      = "mysql://root:test1234@localhost:3306/wanted-test"
+  // 예제 mysql://${유저아이디}:${비밀번호}@${databaseUrl}:${port}/${database 이름}
 }
 
 model post {
