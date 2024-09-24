@@ -20,4 +20,9 @@ export class CommentDto {
     description: '게시물 아이디',
   })
   postId: number;
+
+  @ApiProperty({
+    description: '부모 댓글 아이디',
+  })
+  commentId?: number;
 }

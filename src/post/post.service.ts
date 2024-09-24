@@ -1,13 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { post, Prisma } from '@prisma/client';
+import { NOTI_TYPE, post, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { plainToInstance } from 'class-transformer';
 import { PostDto } from './dto/post.dto';
+import { KeywordService } from 'src/keyword/keyword.service';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly keywordService: KeywordService,
+  ) {}
 
   /**
    * 게시물 생성
@@ -16,6 +20,12 @@ export class PostService {
    */
   async create(createPostDto: Prisma.postCreateInput): Promise<PostDto> {
     const post = await this.prisma.post.create({ data: createPostDto });
+
+    await this.keywordService.noti(
+      createPostDto.content,
+      NOTI_TYPE.POST,
+      post.id,
+    );
 
     return plainToInstance(PostDto, post);
   }

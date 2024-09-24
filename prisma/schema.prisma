@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = []
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -23,26 +23,46 @@ model post {
 }
 
 model comment {
-  id       Int      @id @default(autoincrement())
-  content  String
-  writer   String
-  postId   Int      @map("post_id")
-  createDt DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
+  id        Int      @id @default(autoincrement())
+  content   String
+  writer    String
+  postId    Int      @map("post_id")
+  commentId Int?     @map("parent_id")
+  createDt  DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
 
-  post  post    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  reply reply[]
+  post post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  parent  comment?  @relation("reply", fields: [commentId], references: [id], onDelete: Cascade)
+  replies comment[] @relation("reply")
 
   @@map("COMMENT")
 }
 
-model reply {
-  id        Int      @id @default(autoincrement())
-  content   String
-  writer    String
-  commentId Int      @map("comment_id")
-  createDt  DateTime @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
+model keyword {
+  id      Int    @id @default(autoincrement())
+  keyword String
+  writer  String
 
-  comment comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  keywordNoti keywordNoti[]
 
-  @@map("REPLY")
+  @@unique([keyword, writer])
+  @@fulltext([keyword])
+  @@map("KEYWORD")
+}
+
+model keywordNoti {
+  id        Int       @id @default(autoincrement())
+  type      NOTI_TYPE
+  targetId  Int       @map("target_id")
+  keywordId Int       @map("keyword_id")
+  createDt  DateTime  @default(dbgenerated("NOW()")) @map("create_dt") @db.DateTime(0)
+
+  keyword keyword @relation(fields: [keywordId], references: [id])
+
+  @@map("KEYWORD_NOTI")
+}
+
+enum NOTI_TYPE {
+  POST
+  COMMENT
 }
